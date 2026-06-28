@@ -1,3 +1,4 @@
+import re
 from datetime import date, timedelta
 from typing import Optional
 
@@ -90,6 +91,13 @@ class MovieCreateSchema(BaseModel):
         if value > max_allowed_date:
             raise ValueError("Date must not be more than one year in the future.")
         return value
+
+    @field_validator("country")
+    @classmethod
+    def validate_country_code(cls, value: str) -> str:
+        if not re.fullmatch(r"[A-Za-z]{3}", value):
+            raise ValueError("Country must be a valid ISO 3166-1 alpha-3 code (3 letters).")
+        return value.upper()
 
 
 class MovieUpdateSchema(BaseModel):

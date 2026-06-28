@@ -50,6 +50,9 @@ async def get_movies(
     total_items = (await db.execute(select(func.count(MovieModel.id)))).scalar_one()
     total_pages = (total_items + per_page - 1) // per_page if total_items else 0
 
+    if page > total_pages:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No movies found.")
+
     offset = (page - 1) * per_page
     result = await db.execute(
         select(MovieModel)
